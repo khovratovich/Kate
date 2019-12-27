@@ -9,7 +9,7 @@
 \usepackage{graphicx}
 
 \title{Fast amortized Kate proofs}
-\author{Dmitry Khovratovich\\Ethereum Foundation}
+\author{Dmitry Khovratovich, Dankrad Feist\\Ethereum Foundation}
 
 \begin{document}
 
@@ -52,7 +52,7 @@ Expanding on the last equation, we get
 T_y(X) =f_mX^{m-1} + (f_{m-1}+yf_{m})X^{m-2} + (f_{m-2}+yf_{m-1}+y^2f_m)X^{m-3} +\\+
 (f_{m-3}+yf_{m-2}+y^2f_{m-1}+y^3)X^{m-4}+\cdots +  (f_{1}+yf_{2}+y^2f_3+\cdots+y^{m-1}f_m).
 \end{multline}
-\section{Multiple proofs}
+\section{Multiple proofs}\label{sec:multiproof}
 
 Let $w$ be a $2^n$-th root of unity. We show how to construct Kate proofs for  $w,w^2,w^3,\ldots, w^{2^n}=1$. 
 
@@ -141,4 +141,77 @@ $$
 is a \emph{Toeplitz} matrix. It is known that a multiplication of a vector by a $m\times m$ Toeplitz matrix costs $O(m\log m)$ operations using FFT \url{http://www.netlib.org/utk/people/JackDongarra/etemplates/node384.html}. 
 
 Therefore, we can first compute $\mathbf{h}$ from SRS and then all  $2^n$ Kate proofs, i.e. $\mathbf{C}_T$, using $O(n2^n)$ multiplications compared to $O(2^{2n})$ for the naive approach (assuming $m = O(2^n)$).
+
+\section{Multi-reveal}
+
+Let $\psi\in\mathbb{F}_p$ be an $\ell$-th root of unity ($\psi^\ell=1$), for $\ell$ odd. Let's say we want to reveal the polynomial evaluations $f(y) = z_0$, $f(\psi y) = z_1$, $\ldots$, $f(\psi^{\ell-1})=z_{\ell - 1}$.
+
+Noting that $(x-y)\cdot(x-\psi y) \cdots (x - \psi^{\ell-1} y) = x^\ell - y^\ell$, the proof for this can be given by computing the polynomial
+\begin{equation}
+g(x) = f(x) // (x^\ell - y^\ell)\text{,}
+\end{equation}
+where $//$ stands for the truncated long division, and then computing the proof
+\begin{equation}
+     \pi[f(y) = z_0, \ldots, f(\psi^{\ell-1}y)=z_{\ell - 1}] = [g(s)] \text{.}
+\end{equation}
+
+This proof can be verified by computing the checking polynomial $h(x) = f(x) \mod (x^\ell - y^\ell)$ (which can be interpolated from the given values), and checking that
+\begin{equation}
+e(C_f, \cdot) = e(\pi[f(y) = z_0), \ldots, f(\psi^{\ell-1})=z_{\ell - 1}], [s^\ell - y^\ell]) e(h(s),\cdot) \text{.}
+\end{equation}
+
+\subsection{Multiple multi-reveals}
+
+We now want to generalise the result in section \ref{sec:multiproof} to the case were each of the reveals is actually a multireveal.
+
+Letting $w$ a $2^n$-th root of unity, we want to compute proofs
+\begin{eqnarray}
+     \pi[f(1), \ldots, f(\psi^{\ell-1})] &=& C_{T_{w^0, \ell}} \\
+     \pi[f(w), \ldots, f(w\psi^{\ell-1})] &=& C_{T_{w^1, \ell}} \\
+     &\vdots& \nonumber \\
+     \pi[f(w^{2^n-1}), \ldots, f(w^{2^n-1}\psi^{\ell-1})] &=& C_{T_{w^{2^n-1}, \ell}} \text{.}
+\end{eqnarray}
+
+The proof for $w^k$ is
+\begin{multline}
+\pi[f(w^k), \ldots, f(w^k\psi^{\ell-1})] = C_{T_{w^k,\ell}}  =f_m[s^{m-\ell}] + f_{m-1}[s^{m-\ell - 1}] + \dots + f_{m-\ell+1}[s^{m-2\ell+1}] +\\
++ (f_{m-\ell}+w^{k\ell}f_{m})[s^{m-2\ell}] + (f_{m-\ell-1}+w^{k\ell}f_{m-1})[s^{m-2\ell-1}] + \cdots + (f_{m-2\ell+1}+w^{k\ell}f_{m-\ell+1})[s^{m-3\ell+1}] +\\
++ (f_{m-2\ell}+w^{k\ell}f_{m-\ell} +w^{2k\ell}f_{m})[s^{m-3\ell}] + (f_{m-2\ell-1}+w^{k\ell}f_{m-\ell-1} + w^{2k\ell}f_{m-1})[s^{m-3\ell-1}] + \\ \cdots + (f_{m-3\ell+1}+w^{k\ell}f_{m-2\ell+1}+w^{2k\ell}f_{m-\ell+1})[s^{m-4\ell+1}] +\\
+\vdots 
+\end{multline}
+Regrouping the terms, we get (for $2^n\geq m$):
+\begin{align}
+     C_{T_{w^k},\ell} 
+     =&\left(f_m[s^{m-\ell}]+f_{m-\ell-1}[s^{m-2}]+f_{m-\ell-2}[s^{m-3}]+\cdots + f_{\ell+1}[s]+f_\ell\right)+\\
+     &+\left(f_m[s^{m-2\ell}]+f_{m-1}[s^{m-2\ell-1}]+f_{m-2}[s^{m-2\ell-2}]+\cdots + f_{2\ell+1}[s]+f_{2\ell}\right)w^{k\ell}+\\
+     &+\left(f_m[s^{m-3\ell}]+f_{m-1}[s^{m-2\ell-1}]+f_{m-2}[s^{m-3\ell-2}]+\cdots + f_{3\ell+1}[s]+f_{3\ell}\right)w^{2k\ell}+\\
+     &+\left(f_m[s^{m-4\ell}]+f_{m-1}[s^{m-4\ell-1}]+f_{m-2}[s^{m-4\ell-2}]+\cdots + f_{4\ell+1}[s]+f_{4\ell}\right)w^{3k\ell}+\\
+     &\vdots
+\end{align}
+Let for $i \geq 1$ denote 
+$$
+h_i = \left(f_m[s^{m-i}]+f_{m-1}[s^{m-i-1}]+f_{m-2}[s^{m-i-2}]+\cdots + f_{i+1}[s]+f_i\right).
+$$
+with $h_i=0$ for $i>m$. Then
+\begin{equation}\label{eq:ctl}
+     C_{T_{w^k,\ell}} = h_\ell + h_{2\ell}w^{k\ell} + h_{3\ell}w^{2k\ell}+\cdots + h_{m\ell}w^{(m-1)k\ell}.
+\end{equation}
+
+Let us denote
+$$
+\mathbf{C}_{T_\ell} = [C_{T_{w^\ell}},C_{T_{w^{2\ell}}},\ldots,C_{T_{w^{2^n\ell}}}]
+$$
+and
+$$
+\mathbf{h_\ell} = [0,0,\ldots,h_\ell,0,\ldots 0,h_{2\ell},0,\ldots].
+$$
+(every $\ell${\em th} term $\neq0$). Note that $\mathbf{C}_{T_\ell}$ is a permutation of the vector $[C_{T_{w^1}},C_{T_{w^{2}}},\ldots,C_{T_{w^{2^n}}}]$ because $\ell$ is coprime to $2^n$.
+Then, from Equation~\eqref{eq:ctl}
+\begin{equation}
+ \mathbf{C}_{T_\ell} = \mathrm{DFT}(\mathbf{h_\ell}), 
+\end{equation}
+and can be computed in $O(n2^n)$ cost given $\mathbf{h_\ell}$ using FFT algorithms.
+
+The vector $\mathbf{h_\ell}$ can be computed in the same way as $\mathbf{h}$ in section \ref{sec:multiproof}, nullifying the zero terms in a second step.
+
 \end{document} 
