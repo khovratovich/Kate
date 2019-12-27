@@ -1,0 +1,144 @@
+
+\documentclass[a4paper]{article}
+\usepackage[hmargin=2cm,vmargin=2cm]{geometry}
+
+
+\pagestyle{plain}
+
+\usepackage{amssymb,amsthm,amsmath,amsfonts,longtable, comment,array, ifpdf, hyperref,url}
+\usepackage{graphicx}
+
+\title{Fast amortized Kate proofs}
+\author{Dmitry Khovratovich\\Ethereum Foundation}
+
+\begin{document}
+
+\maketitle
+
+\section{Definitions}
+
+\subsection{Setup}
+
+Let $g$ be a group $\mathbb{G}$ element, and denote $[a] = a\cdot g$ a group element where $a$ is an integer. 
+
+Let $s$ be a secret, then a universal setup of degree $m$ consists of  $m$ elements of $\mathbb{G}$:
+$$
+[s], [s^2], \ldots, [s^m].
+$$
+
+
+\subsection{Commitment}
+Let $f(X) = \sum_{0\leq i \leq m}f_i X^i$ be a polynomial of degree $m$. Then a commitment $C_f\in \mathbb{G}$ is defined as
+$$
+C_f = \sum_{0\leq i \leq m} f_i[s^i],
+$$
+being effectively an evaluation of $f$ at point $s$.
+
+\subsection{Proof}
+Note that for any $y$ we have that $(X-y)$ divides $f(X) - f(y)$. Then the proof that $f(y) = z$ is defined as
+$$
+\pi[f(y)=z] = C_T,
+$$
+where $T_y(X) = \frac{f(X)-z}{X-y}$ is a polynomial of degree $(m-1)$.
+
+Note that a proof can be constructed using $m$ scalar multiplications in the group. The coefficients of $T$ are computed with one multiplication each:
+\begin{align}
+    T_y(X) &= \sum_{0\leq i \leq m-1}t_i X^i;\\
+    t_{m-1} &= f_m;\\
+    t_j &= f_{j-1}+y\cdot t_{j+1} .
+\end{align}
+Expanding on the last equation, we get
+\begin{multline}
+T_y(X) =f_mX^{m-1} + (f_{m-1}+yf_{m})X^{m-2} + (f_{m-2}+yf_{m-1}+y^2f_m)X^{m-3} +\\+
+(f_{m-3}+yf_{m-2}+y^2f_{m-1}+y^3)X^{m-4}+\cdots +  (f_{1}+yf_{2}+y^2f_3+\cdots+y^{m-1}f_m).
+\end{multline}
+\section{Multiple proofs}
+
+Let $w$ be a $2^n$-th root of unity. We show how to construct Kate proofs for  $w,w^2,w^3,\ldots, w^{2^n}=1$. 
+
+Note that a proof for $w^k$ is
+\begin{multline}
+\pi[f(w^k)=z^k] = C_{T_{w^k}}  =f_m[s^{m-1}] + (f_{m-1}+w^kf_{m})[s^{m-2}] + (f_{m-2}+w^kf_{m-1}+w^{2k}f_m)[s^{m-3}] +\\+
+(f_{m-3}+w^kf_{m-2}+w^{2k}f_{m-1}+w^{3k})[s^{m-4}]+\cdots +  (f_{1}+w^kf_{2}+w^{2k}f_3+\cdots+w^{(m-1)k}f_m).
+\end{multline}
+Regrouping the terms, we get (for $2^n\geq m$):
+\begin{align}
+     C_{T_{w^k}} 
+     =&\left(f_m[s^{m-1}]+f_{m-1}[s^{m-2}]+f_{m-2}[s^{m-3}]+\cdots + f_2[s]+f_1\right)+\\
+     &+\left(f_m[s^{m-2}]+f_{m-1}[s^{m-3}]+f_{m-2}[s^{m-4}]+\cdots + f_3[s]+f_2\right)w^k+\\
+     &+\left(f_m[s^{m-3}]+f_{m-1}[s^{m-4}]+f_{m-2}[s^{m-5}]+\cdots + f_4[s]+f_3\right)w^{2k}+\\
+     &+\left(f_m[s^{m-4}]+f_{m-1}[s^{m-5}]+f_{m-2}[s^{m-6}]+\cdots + f_5[s]+f_4\right)w^{3k}+\\
+     &\cdots\\
+     &+(f_m[s]+f_{m-1})w^{(m-2)k}+f_mw^{(m-1)k}.
+\end{align}
+Let for $1
+\leq i \leq 2^n$ denote $$
+h_i = \left(f_m[s^{m-i}]+f_{m-1}[s^{m-i-1}]+f_{m-2}[s^{m-i-2}]+\cdots + f_{i+1}[s]+f_i\right).
+$$
+with $h_i=0$ for $i>m$. Then
+\begin{equation}\label{eq:ct}
+     C_{T_{w^k}} = h_1 + h_2w^k + h_3w^{2k}+\cdots + h_mw^{(m-1)k}.
+\end{equation}
+
+Let us denote
+$$
+\mathbf{C}_T = [C_{T_{w^1}},C_{T_{w^2}},\ldots,C_{T_{w^{2^n}}}]
+$$
+and
+$$
+\mathbf{h} = [h_1,h_2,\ldots,h_{2^n}].
+$$
+Recalling that the Discrete Fourier Transform of $\mathbf{a}=[a_1,a_2,\ldots,a_{2^n}]$ is
+$$
+\widehat{\mathbf{a}}= [\widehat{a_1},\widehat{a_2},\ldots,\widehat{a_{2^n}}]
+$$
+where 
+$$
+\widehat{a_k} = \sum_{i}a_iw^{ki}
+$$
+Therefore, from Equation~\eqref{eq:ct}
+\begin{equation}
+ \mathbf{C}_T = \mathrm{DFT}(\mathbf{h}), 
+\end{equation}
+and can be computed in $O(n2^n)$ cost given $\mathbf{h}$ using FFT algorithms.
+
+Now we demonstrate that $\mathbf{h}$ can be also computed efficiently from $\{f_i\}$. Indeed, by definition
+$$
+\begin{bmatrix}
+h_1\\
+h_2\\
+h_3\\
+\cdots\\
+h_{m-1}\\
+h_m
+\end{bmatrix}= \begin{bmatrix}
+f_m &f_{m-1}&f_{m-2}&f_{m-3}&\cdots & f_1\\
+0& f_m &f_{m-1}&f_{m-2}&\cdots & f_2\\
+0 & 0& f_m &f_{m-1}&\cdots & f_3\\
+&&\cdots&&&\\
+0 & 0& 0 &0&\cdots & f_{m-1}\\
+0 & 0& 0 &0&\cdots & f_m\\
+\end{bmatrix}\cdot\begin{bmatrix}
+[s^{m-1}]\\
+[s^{m-2}]\\
+[s^{m-3}]\\
+\cdots\\
+[s]\\
+1
+\end{bmatrix}
+$$
+The matrix 
+$$
+A = \begin{bmatrix}
+f_m &f_{m-1}&f_{m-2}&f_{m-3}&\cdots & f_1\\
+0& f_m &f_{m-1}&f_{m-2}&\cdots & f_2\\
+0 & 0& f_m &f_{m-1}&\cdots & f_3\\
+&&\cdots&&&\\
+0 & 0& 0 &0&\cdots & f_{m-1}\\
+0 & 0& 0 &0&\cdots & f_m\\
+\end{bmatrix}
+$$
+is a \emph{Toeplitz} matrix. It is known that a multiplication of a vector by a $m\times m$ Toeplitz matrix costs $O(m\log m)$ operations using FFT \url{http://www.netlib.org/utk/people/JackDongarra/etemplates/node384.html}. 
+
+Therefore, we can first compute $\mathbf{h}$ from SRS and then all  $2^n$ Kate proofs, i.e. $\mathbf{C}_T$, using $O(n2^n)$ multiplications compared to $O(2^{2n})$ for the naive approach (assuming $m = O(2^n)$).
+\end{document} 
