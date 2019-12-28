@@ -144,7 +144,7 @@ Therefore, we can first compute $\mathbf{h}$ from SRS and then all  $2^n$ Kate p
 
 \section{Multi-reveal}
 
-Let $\psi\in\mathbb{F}_p$ be an $\ell$-th root of unity ($\psi^\ell=1$), for $\ell$ odd. Let's say we want to reveal the polynomial evaluations $f(y) = z_0$, $f(\psi y) = z_1$, $\ldots$, $f(\psi^{\ell-1})=z_{\ell - 1}$.
+Let $\psi\in\mathbb{F}_p$ be an $\ell$-th root of unity ($\psi^\ell=1$). Let's say we want to reveal the polynomial evaluations $f(y) = z_0$, $f(\psi y) = z_1$, $\ldots$, $f(\psi^{\ell-1})=z_{\ell - 1}$.
 
 Noting that $(x-y)\cdot(x-\psi y) \cdots (x - \psi^{\ell-1} y) = x^\ell - y^\ell$, the proof for this can be given by computing the polynomial
 \begin{equation}
@@ -160,7 +160,7 @@ This proof can be verified by computing the checking polynomial $h(x) = f(x) \mo
 e(C_f, \cdot) = e(\pi[f(y) = z_0), \ldots, f(\psi^{\ell-1})=z_{\ell - 1}], [s^\ell - y^\ell]) e(h(s),\cdot) \text{.}
 \end{equation}
 
-\subsection{Multiple multi-reveals}
+\subsection{Multiple multi-reveals -- odd $\ell$}
 
 We now want to generalise the result in section \ref{sec:multiproof} to the case were each of the reveals is actually a multireveal.
 
@@ -181,10 +181,10 @@ The proof for $w^k$ is
 \end{multline}
 Regrouping the terms, we get (for $2^n\geq m$):
 \begin{align}
-     C_{T_{w^k},\ell} 
-     =&\left(f_m[s^{m-\ell}]+f_{m-\ell-1}[s^{m-2}]+f_{m-\ell-2}[s^{m-3}]+\cdots + f_{\ell+1}[s]+f_\ell\right)+\\
+     C_{T_{w^k,\ell}} 
+     =&\left(f_m[s^{m-\ell}]+f_{m-1}[s^{m-\ell -1}]+f_{m-2}[s^{m-\ell-2}]+\cdots + f_{\ell+1}[s]+f_\ell\right)+\\
      &+\left(f_m[s^{m-2\ell}]+f_{m-1}[s^{m-2\ell-1}]+f_{m-2}[s^{m-2\ell-2}]+\cdots + f_{2\ell+1}[s]+f_{2\ell}\right)w^{k\ell}+\\
-     &+\left(f_m[s^{m-3\ell}]+f_{m-1}[s^{m-2\ell-1}]+f_{m-2}[s^{m-3\ell-2}]+\cdots + f_{3\ell+1}[s]+f_{3\ell}\right)w^{2k\ell}+\\
+     &+\left(f_m[s^{m-3\ell}]+f_{m-1}[s^{m-3\ell-1}]+f_{m-2}[s^{m-3\ell-2}]+\cdots + f_{3\ell+1}[s]+f_{3\ell}\right)w^{2k\ell}+\\
      &+\left(f_m[s^{m-4\ell}]+f_{m-1}[s^{m-4\ell-1}]+f_{m-2}[s^{m-4\ell-2}]+\cdots + f_{4\ell+1}[s]+f_{4\ell}\right)w^{3k\ell}+\\
      &\vdots
 \end{align}
@@ -197,21 +197,58 @@ with $h_i=0$ for $i>m$. Then
      C_{T_{w^k,\ell}} = h_\ell + h_{2\ell}w^{k\ell} + h_{3\ell}w^{2k\ell}+\cdots + h_{m\ell}w^{(m-1)k\ell}.
 \end{equation}
 
-Let us denote
+Define $\hat \ell$ such that $\ell \hat \ell \cong 1 \pmod{2^n}$. Let us denote
 $$
-\mathbf{C}_{T_\ell} = [C_{T_{w^\ell}},C_{T_{w^{2\ell}}},\ldots,C_{T_{w^{2^n\ell}}}]
+\mathbf{C}_{T_\ell} = [C_{T_{w^{\hat \ell}, \ell}},C_{T_{w^{2\hat \ell}, \ell}},\ldots,C_{T_{w^{2^n\hat \ell}, \ell}}]
 $$
 and
 $$
 \mathbf{h_\ell} = [0,0,\ldots,h_\ell,0,\ldots 0,h_{2\ell},0,\ldots].
 $$
-(every $\ell${\em th} term $\neq0$). Note that $\mathbf{C}_{T_\ell}$ is a permutation of the vector $[C_{T_{w^1}},C_{T_{w^{2}}},\ldots,C_{T_{w^{2^n}}}]$ because $\ell$ is coprime to $2^n$.
-Then, from Equation~\eqref{eq:ctl}
+(every $\ell${\em th} term $\neq0$). 
+Then, from Equation~\eqref{eq:ctle}
 \begin{equation}
  \mathbf{C}_{T_\ell} = \mathrm{DFT}(\mathbf{h_\ell}), 
 \end{equation}
 and can be computed in $O(n2^n)$ cost given $\mathbf{h_\ell}$ using FFT algorithms.
 
 The vector $\mathbf{h_\ell}$ can be computed in the same way as $\mathbf{h}$ in section \ref{sec:multiproof}, nullifying the zero terms in a second step.
+
+\subsection{Multiple multi-reveals -- $\ell$ power of two}
+
+Let $\ell=2^r<2^n$. Then $\psi=w^{2^{n-r}}$.
+
+We want to compute the proofs
+\begin{eqnarray}
+     \pi[f(1), \ldots, f(\psi^{\ell-1})] &=& C_{T_{w^0, \ell}} \\
+     \pi[f(w), \ldots, f(w\psi^{\ell-1})] &=& C_{T_{w^1, \ell}} \\
+     &\vdots& \nonumber \\
+     \pi[f(w^{2^{n-r}-1}), \ldots, f(w^{2^{n-r}-1}\psi^{\ell-1})] &=& C_{T_{w^{2^{n-r}-1}, \ell}} \text{.}
+\end{eqnarray}
+We do not need proofs for $w^{2^{n-r}}$ to $w^{2^{n}-1}$, as these would already be covered.
+
+Things follow analogously to equation \eqref{eq:ctl}:
+\begin{equation}
+     C_{T_{w^k,\ell}} = h_\ell + h_{2\ell}w^{k\ell} + h_{3\ell}w^{2k\ell}+\cdots + h_{m\ell}w^{(m-1)k\ell}
+\end{equation}
+
+Define $\varphi=w^\ell$ and get
+\begin{equation}\label{eq:ctle}
+     C_{T_{w^k,\ell}} = h_\ell + h_{2\ell}\varphi^{k} + h_{3\ell}\varphi^{2k}+\cdots + h_{m\ell}\varphi^{(m-1)k}
+\end{equation}
+
+Defining
+$$
+\mathbf{C}_{T_\ell} = [C_{T_{w}},C_{T_{w^{2}}},\ldots,C_{T_{w^{2^{n-r}}}}]
+$$
+and
+$$
+\mathbf{h_\ell} = [0,0,\ldots,h_\ell,0,\ldots 0,h_{2\ell},0,\ldots].
+$$
+(every $\ell${\em th} term $\neq0$). 
+\begin{equation}
+ \mathbf{C}_{T_\ell} = \mathrm{DFT}_\varphi(\mathbf{h_\ell}), 
+\end{equation}
+and can be computed in $O((n-r)2^{n-r})$ cost given $\mathbf{h_\ell}$ using FFT algorithms.
 
 \end{document} 
