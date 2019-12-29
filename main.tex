@@ -85,9 +85,9 @@ $$
 \mathbf{C}_T = [C_{T_{w^1}},C_{T_{w^2}},\ldots,C_{T_{w^{2^n}}}]
 $$
 and
-$$
+\begin{equation}\label{eq:h}
 \mathbf{h} = [h_1,h_2,\ldots,h_{2^n}].
-$$
+\end{equation}
 Recalling that the Discrete Fourier Transform of $\mathbf{a}=[a_1,a_2,\ldots,a_{2^n}]$ is
 $$
 \widehat{\mathbf{a}}= [\widehat{a_1},\widehat{a_2},\ldots,\widehat{a_{2^n}}]
@@ -100,7 +100,7 @@ Therefore, from Equation~\eqref{eq:ct}
 \begin{equation}
  \mathbf{C}_T = \mathrm{DFT}(\mathbf{h}), 
 \end{equation}
-and can be computed in $O(n2^n)$ cost given $\mathbf{h}$ using FFT algorithms.
+and can be computed in $O(n2^n)$ cost given $\mathbf{h}$ using FFT algorithms\footnote{This works directly as described if $m\leq2^n$. Otherwise, the vector $\mathbf{h}$ can be modified, "wrapping around" the extra $\neq 0$ terms, so the idea also works for $m>2^n$.}.
 
 Now we demonstrate that $\mathbf{h}$ can be also computed efficiently from $\{f_i\}$. Indeed, by definition
 $$
@@ -177,7 +177,7 @@ The proof for $w^k$ is
 \pi[f(w^k), \ldots, f(w^k\psi^{\ell-1})] = C_{T_{w^k,\ell}}  =f_m[s^{m-\ell}] + f_{m-1}[s^{m-\ell - 1}] + \dots + f_{m-\ell+1}[s^{m-2\ell+1}] +\\
 + (f_{m-\ell}+w^{k\ell}f_{m})[s^{m-2\ell}] + (f_{m-\ell-1}+w^{k\ell}f_{m-1})[s^{m-2\ell-1}] + \cdots + (f_{m-2\ell+1}+w^{k\ell}f_{m-\ell+1})[s^{m-3\ell+1}] +\\
 + (f_{m-2\ell}+w^{k\ell}f_{m-\ell} +w^{2k\ell}f_{m})[s^{m-3\ell}] + (f_{m-2\ell-1}+w^{k\ell}f_{m-\ell-1} + w^{2k\ell}f_{m-1})[s^{m-3\ell-1}] + \\ \cdots + (f_{m-3\ell+1}+w^{k\ell}f_{m-2\ell+1}+w^{2k\ell}f_{m-\ell+1})[s^{m-4\ell+1}] +\\
-\vdots 
+\vdots \\
 \end{multline}
 Regrouping the terms, we get (for $2^n\geq m$):
 \begin{align}
@@ -186,7 +186,8 @@ Regrouping the terms, we get (for $2^n\geq m$):
      &+\left(f_m[s^{m-2\ell}]+f_{m-1}[s^{m-2\ell-1}]+f_{m-2}[s^{m-2\ell-2}]+\cdots + f_{2\ell+1}[s]+f_{2\ell}\right)w^{k\ell}+\\
      &+\left(f_m[s^{m-3\ell}]+f_{m-1}[s^{m-3\ell-1}]+f_{m-2}[s^{m-3\ell-2}]+\cdots + f_{3\ell+1}[s]+f_{3\ell}\right)w^{2k\ell}+\\
      &+\left(f_m[s^{m-4\ell}]+f_{m-1}[s^{m-4\ell-1}]+f_{m-2}[s^{m-4\ell-2}]+\cdots + f_{4\ell+1}[s]+f_{4\ell}\right)w^{3k\ell}+\\
-     &\vdots
+     &\vdots \\
+     & (\cdots) w^{\lfloor m / \ell\rfloor k\ell} 
 \end{align}
 Let for $i \geq 1$ denote 
 $$
@@ -197,26 +198,25 @@ with $h_i=0$ for $i>m$. Then
      C_{T_{w^k,\ell}} = h_\ell + h_{2\ell}w^{k\ell} + h_{3\ell}w^{2k\ell}+\cdots + h_{m\ell}w^{(m-1)k\ell}.
 \end{equation}
 
-Define $\hat \ell$ such that $\ell \hat \ell \cong 1 \pmod{2^n}$. Let us denote
+Let us denote
 $$
-\mathbf{C}_{T_\ell} = [C_{T_{w^{\hat \ell}, \ell}},C_{T_{w^{2\hat \ell}, \ell}},\ldots,C_{T_{w^{2^n\hat \ell}, \ell}}]
+\mathbf{C}_{T_\ell} = [C_{T_{w, \ell}},C_{T_{w^{2}, \ell}},\ldots,C_{T_{w^{2^n}, \ell}}]
 $$
 and
 $$
-\mathbf{h_\ell} = [0,0,\ldots,h_\ell,0,\ldots 0,h_{2\ell},0,\ldots].
+\mathbf{h_\ell} = [h_\ell,0h_{\ell+1},\ldots,0h_{2\ell-1},h_{2\ell},0h_{2\ell+1},\ldots,0h_{3\ell-1},h_{3\ell+1},0h_{3\ell+1},\ldots,0h_{2^n+\ell-1}].
 $$
-(every $\ell${\em th} term $\neq0$). 
-Then, from Equation~\eqref{eq:ctle}
+Then, from Equation~\eqref{eq:ctl}
 \begin{equation}
  \mathbf{C}_{T_\ell} = \mathrm{DFT}(\mathbf{h_\ell}), 
 \end{equation}
 and can be computed in $O(n2^n)$ cost given $\mathbf{h_\ell}$ using FFT algorithms.
 
-The vector $\mathbf{h_\ell}$ can be computed in the same way as $\mathbf{h}$ in section \ref{sec:multiproof}, nullifying the zero terms in a second step.
+The vector $\mathbf{h_\ell}$ can be computed easily from $\mathbf{h}$ in equation \eqref{eq:h}.
 
 \subsection{Multiple multi-reveals -- $\ell$ power of two}
 
-Let $\ell=2^r<2^n$. Then $\psi=w^{2^{n-r}}$.
+Let $\ell=2^r<2^n$. Define $\psi=w^{2^{n-r}}$.
 
 We want to compute the proofs
 \begin{eqnarray}
@@ -243,12 +243,12 @@ $$
 $$
 and
 $$
-\mathbf{h_\ell} = [0,0,\ldots,h_\ell,0,\ldots 0,h_{2\ell},0,\ldots].
+\mathbf{h'_\ell} = [h_\ell, h_{2\ell},\ldots,h_{(2^{n-r}-1)\ell}],
 $$
-(every $\ell${\em th} term $\neq0$). 
+we get
 \begin{equation}
  \mathbf{C}_{T_\ell} = \mathrm{DFT}_\varphi(\mathbf{h_\ell}), 
 \end{equation}
-and can be computed in $O((n-r)2^{n-r})$ cost given $\mathbf{h_\ell}$ using FFT algorithms.
+and can be computed in $O((n-r)2^{n-r})$ cost given $\mathbf{h'_\ell}$ using FFT algorithms. The vector $\mathbf{h'_\ell}$ can be computed easily from $\mathbf{h}$ in equation \eqref{eq:h}.
 
 \end{document} 
