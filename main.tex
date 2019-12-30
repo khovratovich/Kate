@@ -102,27 +102,29 @@ Therefore, from Equation~\eqref{eq:ct}
 \end{equation}
 and can be computed in $O(n2^n)$ cost given $\mathbf{h}$ using FFT algorithms\footnote{This works directly as described if $m\leq2^n$. Otherwise, the vector $\mathbf{h}$ can be modified, "wrapping around" the extra $\neq 0$ terms, so the idea also works for $m>2^n$.}.
 
+\subsection{Computing $\mathbf{h}$}\label{sec:h}
+
 Now we demonstrate that $\mathbf{h}$ can be also computed efficiently from $\{f_i\}$. Indeed, by definition
 $$
 \begin{bmatrix}
 h_1\\
 h_2\\
 h_3\\
-\cdots\\
+\vdots\\
 h_{m-1}\\
 h_m
 \end{bmatrix}= \begin{bmatrix}
 f_m &f_{m-1}&f_{m-2}&f_{m-3}&\cdots & f_1\\
 0& f_m &f_{m-1}&f_{m-2}&\cdots & f_2\\
 0 & 0& f_m &f_{m-1}&\cdots & f_3\\
-&&\cdots&&&\\
+&&\ddots&&&\\
 0 & 0& 0 &0&\cdots & f_{m-1}\\
 0 & 0& 0 &0&\cdots & f_m\\
 \end{bmatrix}\cdot\begin{bmatrix}
 [s^{m-1}]\\
 [s^{m-2}]\\
 [s^{m-3}]\\
-\cdots\\
+\vdots\\
 [s]\\
 1
 \end{bmatrix}
@@ -212,7 +214,44 @@ Then, from Equation~\eqref{eq:ctl}
 \end{equation}
 and can be computed in $O(n2^n)$ cost given $\mathbf{h_\ell}$ using FFT algorithms.
 
-The vector $\mathbf{h_\ell}$ can be computed easily from $\mathbf{h}$ in equation \eqref{eq:h}.
+\subsubsection{Computing $\mathbf{h_\ell}$}\label{sec:hl}
+
+In order to compute $\mathbf{h_\ell}$ we need to slightly modify the algorithm from section \ref{sec:h}. First, define
+\begin{multline}
+\mathbf{h}_{\ell, i\ell, j} = f_{m-j}[s^{m-i\ell-j}] + f_{m-\ell-j}[s^{m-(i+1)\ell-j}] + f_{m-2\ell-j}[s^{m-(i+2)\ell-j}] + \cdots\\ + f_{(m - j) \% \ell + (i+1)\ell}[s^{(m-j)\% \ell + \ell}]  + f_{(m - j) \% \ell + i\ell}[s^{(m-j)\% \ell}].
+\end{multline}
+Using this,
+\begin{equation}
+\mathbf{h}_{i\ell} = \sum_{j=0}^{\ell-1}\mathbf{h}_{\ell, i\ell, j}\text{.}
+\end{equation}
+
+The $\mathbf{h}_{\ell, i\ell, j}$ can be computed by the $\ell$ Toeplitz matrix multiplications:
+$$
+\begin{bmatrix}
+h_{\ell,1\ell,j}\\
+h_{\ell,2\ell,j}\\
+h_{\ell,3\ell,j}\\
+\vdots\\
+h_{\ell,(\lfloor \frac{m-j}{\ell}\rfloor-1)\ell,j}\\
+h_{\ell,\lfloor \frac{m-j}{\ell}\rfloor\ell,j}
+\end{bmatrix}= \begin{bmatrix}
+f_{m-j} &f_{m-1\ell-j}&f_{m-2\ell-j}&f_{m-3\ell-j}&\cdots & f_{(m - j) \% \ell + \ell}\\
+0& f_{m-j} &f_{m-1\ell-j}&f_{m-2\ell-j}&\cdots & f_{(m - j) \% \ell + 2\ell}\\
+0 & 0& f_{m-j} &f_{m-1\ell-j}&\cdots & f_{(m - j) \% \ell + 3\ell}\\
+&&&&\ddots&\\
+0 & 0& 0 &0&\cdots & f_{m-\ell-j}\\
+0 & 0& 0 &0&\cdots & f_{m-j}\\
+\end{bmatrix}\cdot\begin{bmatrix}
+[s^{m-1\ell-j}]\\
+[s^{m-2\ell-j}]\\
+[s^{m-3\ell-j}]\\
+\vdots\\
+[s^{(m-j)\% \ell + \ell}]\\
+[s^{(m-j)\% \ell}]
+\end{bmatrix}
+$$
+
+These matrix multiplications can be done in the same way as the Toeplitz matrix multiplication in section \ref{sec:h} using FFTs. Note that the vector multiplied by the matrix is independent from the polynomial coefficients, so its Fourier transform can be precomputed, necessitating $\ell$ Fourier transforms of size $2m/\ell$ in the precompute. However, the output of the multiplication can be added before transforming back, so only one IFT of size $2m/\ell$ is necessary.
 
 \subsection{Multiple multi-reveals -- $\ell$ power of two}
 
@@ -249,6 +288,6 @@ we get
 \begin{equation}
  \mathbf{C}_{T_\ell} = \mathrm{DFT}_\varphi(\mathbf{h_\ell}), 
 \end{equation}
-and can be computed in $O((n-r)2^{n-r})$ cost given $\mathbf{h'_\ell}$ using FFT algorithms. The vector $\mathbf{h'_\ell}$ can be computed easily from $\mathbf{h}$ in equation \eqref{eq:h}.
+and can be computed in $O((n-r)2^{n-r})$ cost given $\mathbf{h'_\ell}$ using FFT algorithms. The vector $\mathbf{h'_\ell}$ can be computed in a similar way as described in section \ref{sec:hl}.
 
 \end{document} 
