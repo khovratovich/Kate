@@ -6,7 +6,7 @@ name: LaTeX compilation
 
     # The root LaTeX file to be compiled
 
-    root_file: 
+    root_file: main.tex
 
     # The working directory for the latex compiler to be invoked
 
