@@ -6,14 +6,14 @@ jobs:
     steps:
       - name: LaTeX compilation
         uses: dante-ev/latex-action@v0.2.0
-          with:
-            # The root LaTeX file to be compiled
-            root_file: main.tex
-            # The working directory for the latex compiler to be invoked
-            working_directory: # optional
-            # LaTeX engine to be used
-            compiler: # optional, default is latexmk
-            # Extra arguments to be passed to the latex compiler
-            args: # optional, default is -pdf -latexoption=-file-line-error -latexoption=-interaction=nonstopmode
-            # Install extra packages by apt-get
-            extra_system_packages: # optional
+        with:
+          # The root LaTeX file to be compiled
+          root_file: main.tex
+          # The working directory for the latex compiler to be invoked
+          working_directory: # optional
+          # LaTeX engine to be used
+          compiler: # optional, default is latexmk
+          # Extra arguments to be passed to the latex compiler
+          args: # optional, default is -pdf -latexoption=-file-line-error -latexoption=-interaction=nonstopmode
+          # Install extra packages by apt-get
+          extra_system_packages: # optional
