@@ -45,7 +45,7 @@ Note that a proof can be constructed using $m$ scalar multiplications in the gro
 \begin{align}
     T_y(X) &= \sum_{0\leq i \leq m-1}t_i X^i;\\
     t_{m-1} &= f_m;\\
-    t_j &= f_{j-1}+y\cdot t_{j+1} .
+    t_j &= f_{j+1}+y\cdot t_{j+1} .
 \end{align}
 Expanding on the last equation, we get
 \begin{multline}
@@ -146,7 +146,7 @@ Therefore, we can first compute $\mathbf{h}$ from SRS and then all  $2^n$ Kate p
 
 \section{Multi-reveal}
 
-Let $\psi\in\mathbb{F}_p$ be an $\ell$-th root of unity ($\psi^\ell=1$). Let's say we want to reveal the polynomial evaluations $f(y) = z_0$, $f(\psi y) = z_1$, $\ldots$, $f(\psi^{\ell-1})=z_{\ell - 1}$.
+Let $\psi\in\mathbb{F}_p$ be an $\ell$-th root of unity ($\psi^\ell=1$). Let's say we want to reveal the polynomial evaluations $f(y) = z_0$, $f(\psi y) = z_1$, $\ldots$, $f(\psi^{\ell-1} y)=z_{\ell - 1}$.
 
 Noting that $(x-y)\cdot(x-\psi y) \cdots (x - \psi^{\ell-1} y) = x^\ell - y^\ell$, the proof for this can be given by computing the polynomial
 \begin{equation}
@@ -159,7 +159,7 @@ where $//$ stands for the truncated long division, and then computing the proof
 
 This proof can be verified by computing the checking polynomial $h(x) = f(x) \mod (x^\ell - y^\ell)$ (which can be interpolated from the given values), and checking that
 \begin{equation}
-e(C_f, \cdot) = e(\pi[f(y) = z_0), \ldots, f(\psi^{\ell-1})=z_{\ell - 1}], [s^\ell - y^\ell]) e(h(s),\cdot) \text{.}
+e(C_f, \cdot) = e(\pi[f(y) = z_0, \ldots, f(\psi^{\ell-1}y)=z_{\ell - 1}], [s^\ell - y^\ell]) e(h(s),\cdot) \text{.}
 \end{equation}
 
 \subsection{Multiple multi-reveals -- odd $\ell$}
