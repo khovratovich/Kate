@@ -4,6 +4,8 @@ jobs:
   build_latex:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v1
       - name: LaTeX compilation
         uses: dante-ev/latex-action@v0.2.0
         with:
