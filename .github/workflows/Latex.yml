@@ -24,3 +24,4 @@ jobs:
         with:
           files: main.pdf
           path: ./
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
