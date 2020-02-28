@@ -20,7 +20,7 @@ jobs:
           # Install extra packages by apt-get
           extra_system_packages: # optional
       - name: Upload
-        uses: actions/upload-artifact@master
+        uses: AButler/upload-release-assets@v2.0
         with:
-          name: pdf
+          files: main.pdf
           path: ./
