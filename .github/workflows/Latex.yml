@@ -1,6 +1,6 @@
 name: LaTeX compilation
 
-  uses: dante-ev/latex-action@v0.2.0
+  uses: dante-ev/latex-action@master
 
   with:
 
