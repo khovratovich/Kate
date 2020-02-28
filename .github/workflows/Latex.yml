@@ -20,8 +20,7 @@ jobs:
           # Install extra packages by apt-get
           extra_system_packages: # optional
       - name: Upload
-        uses: AButler/upload-release-assets@v2.0
+        uses: actions/upload-artifact@master
         with:
-          files: main.pdf
+          name: main.pdf
           path: ./
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
