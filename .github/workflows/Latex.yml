@@ -19,3 +19,8 @@ jobs:
           args: # optional, default is -pdf -latexoption=-file-line-error -latexoption=-interaction=nonstopmode
           # Install extra packages by apt-get
           extra_system_packages: # optional
+      - name: Upload
+        uses: actions/upload-artifact@master
+        with:
+          name: test
+          path: test
