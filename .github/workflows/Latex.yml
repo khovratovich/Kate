@@ -4,26 +4,26 @@ jobs:
   build_latex:
     runs-on: ubuntu-latest
     steps:
-    - name: LaTeX compilation
-    uses: dante-ev/latex-action@v0.2.0
-    with:
+      - name: LaTeX compilation
+      uses: dante-ev/latex-action@v0.2.0
+      with:
 
-      # The root LaTeX file to be compiled
+        # The root LaTeX file to be compiled
 
-      root_file: main.tex
+        root_file: main.tex
 
-      # The working directory for the latex compiler to be invoked
+        # The working directory for the latex compiler to be invoked
 
-      working_directory: # optional
+        working_directory: # optional
 
-      # LaTeX engine to be used
+        # LaTeX engine to be used
 
-      compiler: # optional, default is latexmk
+        compiler: # optional, default is latexmk
 
-      # Extra arguments to be passed to the latex compiler
+        # Extra arguments to be passed to the latex compiler
 
-      args: # optional, default is -pdf -latexoption=-file-line-error -latexoption=-interaction=nonstopmode
+        args: # optional, default is -pdf -latexoption=-file-line-error -latexoption=-interaction=nonstopmode
 
-      # Install extra packages by apt-get
+        # Install extra packages by apt-get
 
-      extra_system_packages: # optional
+        extra_system_packages: # optional
