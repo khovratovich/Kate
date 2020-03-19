@@ -23,7 +23,7 @@ jobs:
           # Install extra packages by apt-get
           extra_system_packages: # optional
       - name: Create output directory
-        run: mkdir -p public; mv main.pdf public
+        run: mkdir -p public; mv main.pdf public/amortized.pdf
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
