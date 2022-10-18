@@ -140,7 +140,7 @@ f_m &f_{m-1}&f_{m-2}&f_{m-3}&\cdots & f_1\\
 0 & 0& 0 &0&\cdots & f_m\\
 \end{bmatrix}
 $$
-is a \emph{Toeplitz} matrix. It is known that a multiplication of a vector by a $m\times m$ Toeplitz matrix costs $O(m\log m)$ operations using FFT \url{http://www.netlib.org/utk/people/JackDongarra/etemplates/node384.html}. 
+is a \emph{Toeplitz} matrix. It is known that a multiplication of a vector by a $m\times m$ Toeplitz matrix costs $O(m\log m)$ operations using FFT (e.g. see "Matrix Computations" by Golub and Van Loan, or in \url{https://alinush.github.io/2020/03/19/multiplying-a-vector-by-a-toeplitz-matrix.html#:~:text=To%20multiply%20a%20Toeplitz%20matrix,x%20T%20n%20x%20%E2%86%92%20.}). 
 
 Therefore, we can first compute $\mathbf{h}$ from SRS and then all  $2^n$ Kate proofs, i.e. $\mathbf{C}_T$, using $O(n2^n)$ multiplications compared to $O(2^{2n})$ for the naive approach (assuming $m = O(2^n)$).
 
